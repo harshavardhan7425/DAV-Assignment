@@ -5,6 +5,7 @@ import joblib
 import json
 from groq import Groq
 import os
+import streamlit as st
 
 # Model Training
 df = pd.read_excel("IITB_UG_Student_Dataset.xlsx")
@@ -53,7 +54,7 @@ model = joblib.load("model.pkl")
 columns = joblib.load("columns.pkl")
 
 client = Groq(
-    api_key=os.getenv("GROQ_API_KEY")
+    st.secrets["GROQ_API_KEY"]
 )
 
 # Input preprocessing
