@@ -7,48 +7,6 @@ from groq import Groq
 import os
 import streamlit as st
 
-# Model Training
-df = pd.read_excel("IITB_UG_Student_Dataset.xlsx")
-
-# Cleansing Datatypes
-df['Exercise_frequency'] = df['Exercise_frequency'].astype(str).str.replace(r'[^0-9.]', '', regex=True)
-df['Exercise_frequency'] = pd.to_numeric(df['Exercise_frequency'], errors='coerce')
-
-# Handling missing values
-numerical_col = df.select_dtypes('float64').columns
-category_col = df.select_dtypes('object').columns
-category_col = [col for col in category_col if col != 'Student_ID']
-
-for col in numerical_col:
-    df[col] = df[col].fillna(df[col].median())
-for col in category_col:
-    df[col] = df[col].fillna(df[col].mode()[0])
-
-target = 'Cumulative_Grade'
-X = df.drop(columns=[target, 'Student_ID'], errors='ignore')
-X = pd.get_dummies(X, drop_first=True)
-Y = df[target]
-
-X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=31)
-
-rfr = RandomForestRegressor()
-rfr.fit(X_train, y_train)
-
-y_pred_rfr = rfr.predict(X_test)
-
-importance = rfr.feature_importances_
-features = X.columns
-
-rfr_importance = pd.DataFrame({
-    'Feature': features,
-    'Coefficient': importance
-})
-rfr_importance = rfr_importance.sort_values(by='Coefficient', ascending=False)
-
-# Saving model to disc
-joblib.dump(rfr, "model.pkl")
-joblib.dump(X.columns.tolist(), "columns.pkl")
-
 # Retrieving model
 model = joblib.load("model.pkl")
 columns = joblib.load("columns.pkl")
