@@ -12,7 +12,7 @@ model = joblib.load("model.pkl")
 columns = joblib.load("columns.pkl")
 
 client = Groq(
-    st.secrets["GROQ_API_KEY"]
+    api_key=st.secrets["GROQ_API_KEY"]
 )
 
 # Input preprocessing
